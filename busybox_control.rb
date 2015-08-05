@@ -34,13 +34,11 @@ class Metasploit3 < Msf::Post
     
     file = ::File.join(Msf::Config.data_directory, "post", "busybox_control.sh")
 
-    print_msg(file)
-
     count = 0
 
     ::File.open(file, "rb") do |f|
       while line = f.gets
-      	print_msg(line)
+      	vprint_status(line)
       	line = line.strip      	
         session.shell_write(line + "\n")
         count+=1        
@@ -50,27 +48,9 @@ class Metasploit3 < Msf::Post
         end
       end
     end      
-	      
-    #print_msg(session.shell_read())
-    
-    
+   
+   vprint_status("BusyBox script sent.\n")
    
   end
-  
-    
-  
-  def print_msg(msg, color=true)
-    if not @stdio
-      @stdio = Rex::Ui::Text::Output::Stdio.new
-    end
-
-    if color == true
-      @stdio.auto_color
-    else
-        @stdio.disable_color
-    end
-    @stdio.print_raw(@stdio.substitute_colors(msg))
-  end
-  
-  
+ 
 end

