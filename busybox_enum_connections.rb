@@ -12,9 +12,9 @@ class Metasploit3 < Msf::Post
   def initialize
     super(
       'Name'         => 'BusyBox Enumerate Connections',
-      'Description'  => 'This module will be applied on a session connected 
-                         to a BusyBox sh shell. The script will enumerate 
-                         the connections established by the hosts connected 
+      'Description'  => 'This module will be applied on a session connected
+                         to a BusyBox sh shell. The script will enumerate
+                         the connections established by the hosts connected
                          to the router or device executing BusyBox.',
       'Author'       => 'Javier Vicente Vallejo',
       'License'      => MSF_LICENSE,
@@ -24,15 +24,15 @@ class Metasploit3 < Msf::Post
         ],
       'Platform'      => ['linux'],
        'SessionTypes'  => ['shell']
-    )    
+    )
   end
 
 
 
   def run
-    
+
     found = false
-  
+
     conns_files =[
       "/proc/net/nf_conntrack", "/proc/net/ip_conntrack", "/proc/net/tcp", "/proc/net/udp", "/proc/net/arp", "/proc/fcache/*"
     ]
@@ -57,7 +57,7 @@ class Metasploit3 < Msf::Post
     if found == false
       print_error("Nothing read from connection files, files may be empty")
     end
-    
+
   end
- 
+
 end

@@ -33,11 +33,17 @@ class Metasploit3 < Msf::Post
   def run        
     
     if datastore['DELETE'] == true
-      cmd_exec("iptables -D FORWARD -d #{datastore['TARGETHOST']} -j ACCEPT")
+      vprint_status("Executing iptables to delete dmz")
+      vprint_status(cmd_exec("iptables -D FORWARD -d #{datastore['TARGETHOST']} -j ACCEPT"))
     else
-      cmd_exec("iptables -A FORWARD -d #{datastore['TARGETHOST']} -j ACCEPT")
+      vprint_status("Executing iptables to add dmz")
+      vprint_status(cmd_exec("iptables -A FORWARD -d #{datastore['TARGETHOST']} -j ACCEPT"))
     end
-       
+    if datastore['VERBOSE']
+      vprint_status(cmd_exec("iptables --list"))
+    end
+    print_good("Dmz modified. Enable verbose for additional information.")
+        
   end
  
 end
