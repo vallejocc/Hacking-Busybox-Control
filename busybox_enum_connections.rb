@@ -30,16 +30,13 @@ class Metasploit3 < Msf::Post
 
 
   def run
-
     found = false
-
     conns_files =[
       "/proc/net/nf_conntrack", "/proc/net/ip_conntrack", "/proc/net/tcp", "/proc/net/udp", "/proc/net/arp", "/proc/fcache/*"
     ]
-
     vprint_status("Searching for files that store information about network connections.")
     conns_files.each do |conns_file|
-      if file?(conns_file)
+      if file_exists(conns_file)
         found = true
         print_good("Connections File found: #{conns_file}.")
         begin
@@ -54,11 +51,18 @@ class Metasploit3 < Msf::Post
         end
       end
     end
-
     if found == false
       print_error("Nothing read from connection files, files may be empty.")
     end
-
+  end
+  
+  #file? doesnt work because test -f is not implemented in busybox
+  def file_exists(file_path)
+    s = read_file(file_path)
+    if s and s.length
+      return true
+    end
+    return false
   end
 
 end
