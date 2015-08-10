@@ -37,7 +37,7 @@ class Metasploit3 < Msf::Post
   #udhcpd.conf too, with SRVHOST dns address, that should be given to network's hosts via dhcp
 
   def run
-  
+
     workdone = false
     vprint_status("Searching for files to modify dns server.")
     if file_exists("/etc/resolv.conf")
@@ -84,7 +84,7 @@ class Metasploit3 < Msf::Post
     if !workdone
       print_error("Unable to modify dns server.")
     end
-    
+
   end
 
   #This function checks if the target file is writable and writes or append the data given as parameter.

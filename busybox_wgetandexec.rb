@@ -36,7 +36,7 @@ class Metasploit3 < Msf::Post
   #The module tries to update resolv.conf file with the SRVHOST dns address. It tries to update
   #udhcpd.conf too, with SRVHOST dns address, that should be given to network's hosts via dhcp
 
-  def run    
+  def run
     vprint_status("Trying to find writable directory.")
     writable_directory = nil
     writable_directory = "/etc/" if is_writable_directory("/etc")
@@ -61,8 +61,8 @@ class Metasploit3 < Msf::Post
   end
 
   #This function checks if the target directory is writable
-  
-  def is_writable_directory(directory_path)  
+
+  def is_writable_directory(directory_path)
     retval = false
     rand_str = ""; 16.times{rand_str  << (65 + rand(25)).chr}
     file_path = directory_path + "/" + rand_str
@@ -74,7 +74,7 @@ class Metasploit3 < Msf::Post
       retval = true
     end
     cmd_exec("rm -f #{file_path}"); Rex::sleep(0.1)
-    return retval    
+    return retval
   end
 
   #file? doesnt work because test -f is not implemented in busybox

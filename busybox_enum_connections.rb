@@ -55,7 +55,7 @@ class Metasploit3 < Msf::Post
       print_error("Nothing read from connection files, files may be empty.")
     end
   end
-  
+
   #file? doesnt work because test -f is not implemented in busybox
   def file_exists(file_path)
     s = read_file(file_path)

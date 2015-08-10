@@ -138,7 +138,7 @@ class Metasploit3 < Msf::Post
     begin
       #receiving ping results
       count=0
-      print_status("Script has been sent to the busybox device. Doing ping to the range of addresses.")        
+      print_status("Script has been sent to the busybox device. Doing ping to the range of addresses.")
       while count<15 #we stop when we have been 15 seconds without receiving responses
         result = session.shell_read()
         if result.length>0
@@ -148,18 +148,18 @@ class Metasploit3 < Msf::Post
         else
           vprint_status("No response.")
           count+=1
-        end      
+        end
         Rex::sleep(1.00)
       end
     rescue
       print_warning("Problems were found while receiving ping results. Probably remote device terminated the connection.\nResults that were already received will be kept.")
     end
-      
+
     #storing results
 
     p = store_loot("Pingnet", "text/plain", session, full_results, "#{datastore['IPRANGESTART']}"+"-"+"#{datastore['IPRANGEEND']}", "BusyBox Device Network Range Pings")
     print_good("Pingnet results saved to #{p}.")
-      
+
   end
 
 end
